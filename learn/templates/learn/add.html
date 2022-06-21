@@ -1,0 +1,79 @@
+{% load static %}
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="{% static 'learn/style_adde.css' %}">
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        {% if dark_mode %}
+            <style>
+                :root{
+                    --backgound:#282828;
+                    --background:linear-gradient(90deg, rgba(45,44,44,1) 0%, rgba(40,40,40,1) 50%, rgba(30,30,30,1) 100%);
+                    --color:#bbb;
+                    --blue_tr: rgba(5, 62, 109, 0.6);
+                    --shadow: #232323;
+                    --foreground: #1f1f1f;
+                    --other: #312e2e;
+                }
+            </style>
+        {% endif %}
+        {% if user.is_authenticated %}
+            
+            <div id="user">
+                <div class="head"></div>
+                <div class="body"></div>
+                <div id="name">{{user.username}}</div>
+                <div id= "logout"><a id= "special" href="/logout">odhlásiť sa</a> </div>
+            </div>
+            <div class = "formcontainer">
+                <h1>Tu sú tvoje slovíčka</h1>
+                
+                <form action="{% url 'learn:add' %}" method="POST">
+                {% csrf_token %}
+                    <input name="newitems", id="field", autocomplete="off", spellcheck="false", placeholder = "word-present-past-translation">
+                    <input type="submit", name="submit", id="add", value="Add">
+                </form>
+            </div>
+            <div class="block">
+                <div class = "werbs">
+                    <h2>Slovesá</h2>
+                    {% for i in werbs %}
+                    <div class="item">
+                        
+                        <span ><a href= "/detail/werb/{{i.id}}/" class="none"><p>{{forloop.counter}}</p><p>{{i}}</p></a></span>
+                        <a href="delete/werb/{{i.id}}/" value = "{{i.id}}" >Del</a>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class = "words">
+                <h2>Podstatné a Prídavné mená</h2>
+                {% for i in words %}
+                        <div class="item">
+                            
+                            <span><a href= "/detail/word/{{i.id}}/" class="none"><p>{{forloop.counter}}</p><p>{{i}}</p></a></span>
+                            <a href="delete/word/{{i.id}}/" value = "{{i.id}}">Del</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="hrat"><a href="{% url 'learn:index' %}" class = "link">Hrat</a></div>
+        {% else %}
+            <div class="neprihlaseny">
+                <h1>Nie ste prihlihlaseny prihlas sa<a href="/login" class= "normal">tu</a></h1>
+            </div>
+        {% endif %}
+        
+        
+        
+        
+        <script src="{% static 'learn/user.js' %}" async defer></script>
+    </body>
+</html>

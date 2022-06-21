@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="{% static 'learn/style_detail.css' %}">
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        {% if dark_mode %}
+            <style>
+                :root{
+                    --backgound:#282828;
+                    --background:linear-gradient(90deg, rgba(45,44,44,1) 0%, rgba(40,40,40,1) 50%, rgba(30,30,30,1) 100%);
+                    --color:#bbb;
+                    --blue_tr: rgba(5, 62, 109, 0.6);
+                    --shadow: #232323;
+                    --foreground: #1f1f1f;
+                    --other: #312e2e;
+                }
+            </style>
+        {% endif %}
+        {% if user.is_authenticated%}
+            
+            <div id="user">
+                <div class="head"></div>
+                <div class="body"></div>
+                <div id="name">{{user.username}}</div>
+                <div id= "logout"><a id= "special" href="/logout">odhlásiť sa</a> </div>
+            </div>
+            <div class="block">
+                <h1>Slovo : {{word}}</h1>
+                {% if werb_true %}
+                <form action="change/">
+                    {% csrf_token %}
+                
+                    <span>Slovo <i>:</i> {{word.word}} <input class ="input" name = "word" autocomplete="off" spellcheck="false" method = "post"></span>
+                    <span>Prítomný čas <i>:</i> {{word.tri_os}} <input class ="input" name = "p" autocomplete="off" spellcheck="false"></span>
+                    <span>Minulý čas <i>:</i> {{word.minuly_cas}} <input class ="input" name = "m" autocomplete="off" spellcheck="false"></span>
+                    <span>Preklad <i>:</i> {{word.translation}} <input class ="input" name = "preklad" autocomplete="off" spellcheck="false"></span>
+                    <span>Level <i>:</i> {{word.level}}</span>
+                    <span>Pokusy <i>:</i> {{word.tries}}</span>
+                    <span>Datum <i>:</i> {{word.date}}</span>
+                    <input class="btn" type="submit"  value="Zmenit"></input>
+                </form>
+                {% else %}
+                <form action="change/">
+                    <span>Slovo <i>:</i> {{word.word}}</input> <input class ="input" name = "word" autocomplete="off" spellcheck="false"></span>
+                    <span>Preklad <i>:</i> {{word.translation}} <input class ="input" name = "preklad" autocomplete="off" spellcheck="false"></span>
+                    <span>Level <i>:</i> {{word.level}}</span>
+                    <span>Pokusy <i>:</i> {{word.tries}}</span>
+                    <span>Dátum <i>:</i> {{word.date}}</span>
+                    <input class="btn" type="submit"  value="Zmenit"></input>
+                    
+                </form>
+            </div>
+                {% endif %}
+        {% else %}
+            <div class="neprihlaseny">
+                <h1>Nie ste prihlihlaseny prihlas sa <a href="/login" class= "normal">tu</a></h1>
+            </div>
+        {% endif %}
+        
+        <script src="{% static 'learn/user.js' %}" async defer></script>
+    </body>
+</html>

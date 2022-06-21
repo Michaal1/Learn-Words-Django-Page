@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="{% static 'register/style_reg.css' %}">
+    </head>
+    <body>
+        {% if dark_mode %}
+            <style>
+                :root{
+                    --backgound:#282828;
+                    --background:linear-gradient(90deg, rgba(45,44,44,1) 0%, rgba(40,40,40,1) 50%, rgba(30,30,30,1) 100%);
+                    --color:#bbb;
+                    --blue_tr: rgba(5, 62, 109, 0.6);
+                    --shadow: #232323;
+                    --foreground: #1f1f1f;
+                    --other: #312e2e;
+                }
+            </style>
+        {% endif %}
+        <form action="" method="POST">
+            <div class="block">
+                <h1>Register</h1>
+                <div class="content">
+                    {{form}}
+                    {% csrf_token %}
+                    <input type="submit" id= "sub">
+                </div>
+            </div>
+        
+        </form>
+        <script src="" async defer></script>
+    </body>
+</html>

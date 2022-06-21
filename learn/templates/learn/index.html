@@ -1,0 +1,132 @@
+{% load static %}
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="{% static 'learn/stylee.css' %}">
+    </head>
+    <body id = "bd">
+        {% if error %}
+            <div class="block">
+                <h1>{{error}}</h1>
+            </div>
+            <div class = "info">
+                <a href="{% url 'learn:add' %}">Pridaj/vymaž slová tu -></a>
+            </div>
+        {% else %}
+            {% if dark_mode %}
+                    <style>
+                        :root{
+                            --backgound:#282828;
+                            --background:linear-gradient(90deg, rgba(45,44,44,1) 0%, rgba(40,40,40,1) 50%, rgba(30,30,30,1) 100%);
+                            --color:#bbb;
+                            --blue_tr: rgba(5, 62, 109, 0.6);
+                            --shadow: #232323;
+                            --foreground: #1f1f1f;
+                            --other: #312e2e;
+                        }
+                        .slider{
+                            background: #2196F3;
+                        }
+                        .point{
+                            -webkit-transform: translateX(26px);
+                            -ms-transform: translateX(26px);
+                            transition: transform 0.5s ease ;
+                            transform: translateX(23px);
+                        }
+                        
+                    </style>
+            {% endif %}
+            {% if user.is_authenticated%}
+                <form action="{% url 'learn:mode' %}">
+                    <label class="switch">
+                        <input onChange="this.form.submit()" type="checkbox" value= "learn/index.html" name= "mode" id= "mode">
+                        <span class="slider"></span>
+                        <div class="point"></div>
+                    </label>
+                </form>
+                <div id="user">
+                    <div class="head"></div>
+                    <div class="body"></div>
+                    <div id="name">{{user.username}}</div>
+                    <div id= "logout"><a id= "special" href="/logout">odhlásiť sa</a> </div>
+                </div>
+                {% if werb_true %}
+                
+                    
+                    <div class="block">
+                        <h1>Prelož slová</h1>
+                        
+                        <div class="text">
+                            
+                            <p id = "text_word" class="txt">Slovo</p>
+                            <p id = "text_Pritomny_cas" class="txt">Prítomný čas</p>
+                            <p id = "text_Mynuly_cas" class="txt">Minulý čas</p>
+                            <p id = "text_preklad" class="txt">Preklad</p>
+                        </div>
+                        <div id = "border"></div>
+                        <form action="{% url 'learn:check' %}" method="post">
+                            {% csrf_token %}
+                            {% if ind %}
+                                <input id="in_1",  name = "word" , value="{{w}}", autocomplete="off" spellcheck="false">
+                                <input id="in_2",  name = "Pritomny_cas", autocomplete="off" spellcheck="false">
+                                <input id="in_3",  name = "Mynuly_cas", autocomplete="off" spellcheck="false">
+                                <input id="in_4" , name = "preklad", autocomplete="off" spellcheck="false">
+                                <input class="submit"  , type="submit">
+                            {% else %}
+                                <input id="in_1",  name = "word" , autocomplete="off" spellcheck="false">
+                                <input id="in_2",  name = "Pritomny_cas", autocomplete="off" spellcheck="false">
+                                <input id="in_3",  name = "Mynuly_cas", autocomplete="off" spellcheck="false">
+                                <input id="in_4" , name = "preklad", value="{{ w}}", autocomplete="off" spellcheck="false">
+                                <input class="submit"  , type="submit">
+                            {% endif %}
+                        </form>
+                        
+                    </div>
+                    <div class = "info">
+                        <a href="{% url 'learn:add' %}">Pridaj/vymaž slová tu -></a>
+                    </div>
+                {% else %} 
+                    <div class="block2">
+                        <h1>Prelož slová</h1>
+                        
+                        <div class="text2">  
+                            <p id = "text_wordt" class="txt">Slovo</p>
+                            <p id = "text_prekladt" class="txt">Preklad</p>
+                        </div>
+                        <div id = "bordert"></div>
+                        <form action="{% url 'learn:check' %}" method="post">
+                            {% csrf_token %}
+                            {% if ind %}
+                                <input id="in_t", name = "word" , value = "{{w}}", autocomplete="off" spellcheck="false">
+                                <input id="in_tt", name = "preklad", autocomplete="off" spellcheck="false">
+                            {% else %}
+                                <input id="in_t", name = "word" , autocomplete="off" spellcheck="false">
+                                <input id="in_tt", name = "preklad" , value = "{{w}}", autocomplete="off" spellcheck="false">
+                            {% endif %}
+                            <input class="submit2 submit", type="submit">
+                        </form>
+                        
+                    </div>
+                    <div class = "info">
+                        <a href="{% url 'learn:add' %}">Pridaj/vymaž slová tu -></a>
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="block">
+                    <h1>Nie ste prihlihlaseny prihlas sa<a href="/login" class= "normal">tu</a></h1>
+                </div>
+            {% endif %}
+        {% endif %}
+        <input type="hidden" id="myVar" name="variable" value="{{list_of_words }}">
+        <script src="{% static 'learn/app.js' %}" async defer></script>
+        <script src="{% static 'learn/user.js' %}" async defer></script>
+    </body>
+</html>
