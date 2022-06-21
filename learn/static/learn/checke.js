@@ -1,3 +1,4 @@
+// Program opravi chybne slovicka a po 800ms zobrazi spravnu podobu
 
 var script = document.getElementById("id");
 var data = script.value;
@@ -26,7 +27,7 @@ setTimeout(function () {
       }
       catch{
         document.getElementById("in_t").value = obj.a;
-      document.getElementById("in_tt").value = obj.b;
+        document.getElementById("in_tt").value = obj.b;
       }
 }, 800);
 

@@ -1,14 +1,14 @@
-
+ // Program meni focus na jednotlive okienka formularu podla stlacania sipok
 var one = ""
 var two = ""
 var three = ""
 var four = ""
 var active = 0;
-function getFocus(idd) {
+function getFocus(idd) {// Funkcia nastavi focus podla id formularu
     document.getElementById(idd).focus();
   }
 
-function checkKey(e) {
+function checkKey(e) { // Funkcia nastavuje formular na ktory sa bude davat focus podla pohybu sipkami
     e = e || window.event;
     try {
         var el = document.querySelector('#in_1');
@@ -107,4 +107,4 @@ catch{
     getFocus("in_t")
 }
 
-document.addEventListener('keydown',checkKey);
+document.addEventListener('keydown',checkKey); // Kontrola stlacenia klavesu spusti funkciu "checkKey"

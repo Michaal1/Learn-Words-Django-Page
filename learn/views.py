@@ -13,7 +13,7 @@ from .forms import RegisterForm
 
 data_js = {}
 w  = ""
-werb_true = "" # True - vybrane je sloveso, False - vybrane je slovo
+werb_true = "" # True - vybrane je sloveso, False - vybrane je podstatné meno/ prídavné menp
 word = "" # "*"- obsahuje slovo
 ind = 0 # True - hrac hada slovo, False - hrac hada preklad, 0 - zakladne nastavenie
 correct = True # True - odpoved je spravna, False - odpoved je nespravna
@@ -21,53 +21,49 @@ dark_mode = True # True - cierny rezim, False - normalny rezim
 
 
 
-
-
-
-
-    
-def mode(request):
+  
+def mode(request):# Funkcia meni tmavy a svetly mod
     global dark_mode
     if dark_mode == True:
         dark_mode = False
     else:
         dark_mode = True
     template = request.POST.get("mode")
-    return HttpResponseRedirect(reverse('learn:index'))
+    return HttpResponseRedirect(reverse('learn:index'))# funkcia refresne stranku a zmeni mod
     
     
     
-
-def register(request):
+def register(request):# Funkcia kontroluje registraciu
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('login')
+            return redirect('login')# Ak je registrovaci formular dobry posunie dalej
     else:
         form = RegisterForm()
+
     context = {"dark_mode":dark_mode}
     context.update({"form":form})
-    template = loader.get_template('learn/register.html')
+    template = loader.get_template('learn/register.html')# Ak je formular nespravny
     return HttpResponse(template.render(context, request))
 
 
-        
+
 def index(request):
     global user
-    global ind
-    global word
-    global werb_true
+    global ind  # True - hrac hada slovo, False - hrac hada preklad, 0 - zakladne nastavenie
+    global word # "*"- obsahuje slovo
+    global werb_true# True - vybrane je sloveso, False - vybrane je podstatné meno/ prídavné menp
     global w
     error = False
-    list_of_words = []
-    words = Word.objects.all()
-    werbs = Werb.objects.all()
-    template = loader.get_template('learn/index.html')
-    context = {"dark_mode":dark_mode}
+    list_of_words = [] # Zoznam slovicok z ktorych vyberame
+    words = Word.objects.all() # Vsetky podstatne a pridavne mena
+    werbs = Werb.objects.all() # Vsetky slovesa
+    template = loader.get_template('learn/index.html') #Template
+    context = {"dark_mode":dark_mode} # Context pre template
 
 
-    try:
+    try:# Zostavenie listu slov na viberanie podla datumu kedy sa slovicko moze zobrazit
         for i in words:
             if i in request.user.word.all():
                 if timezone.now() - i.date >= datetime.timedelta(days=0):
@@ -79,23 +75,27 @@ def index(request):
                     list_of_words.append(i)
     except:
         return HttpResponse(template.render(context, request))
-    try: 
+
+
+    try: #Vyberie slovicko na hadanie a ci bude hrac hadat slovicko alebo jeho preklad
         word = random.choice(list_of_words)
         ind = random.randint(0,1)
         if ind == 0:
-            ind = True
+            ind = True # Hrac hada slovo
             w = word.word
         else:
-            ind = False
+            ind = False #  hrac hada preklad
             w = word.translation
         
 
-        try:
+        try: # Zistenie ci je to sloveso alebo nie,ak ma tretiu osobu je to sloveso
             if word.tri_os:
-                werb_true = True
+                werb_true = True #Hrac hada sloveso
         except:
-            werb_true = False
-    except:
+            werb_true = False #Hrac nehada sloveso
+
+
+    except:# Ak hrac nema ziadne slovicka
         error = "You hove no words"
     
 
@@ -109,60 +109,68 @@ def index(request):
     }
     return HttpResponse(template.render(context, request))
 
-def check(request,):
-    global data_js
-    global correct
-    one_is_correct = False
-    two_is_correct  = False
-    three_is_correct  = False
-    four_is_correct  = False
+
+
+def check(request,):# Kontrola slovicka 
+    global data_js # Java script 
+    global correct # Premenna, hovori o spravnosti pokusu
+    one_is_correct = False # Hovory o spravnosti slovicka
+    two_is_correct  = False # Hovory o spravnosti tretej osoby
+    three_is_correct  = False # Hovory o spravnosti minuleho casu
+    four_is_correct  = False # Hovory o spravnosti prekladu
 
     template = loader.get_template('learn/check.html')
     context = {"dark_mode":dark_mode}
     context.update({"werb_true": werb_true})
 
-    if werb_true == True:
+    if werb_true == True: # Ak hrac hadal sloveso
         if ind == 0:
             pass
         else:
             pass
-        word_ = request.POST.get("word").lower()
-        P_cas = request.POST.get("Pritomny_cas").lower()
-        M_cas = request.POST.get("Mynuly_cas").lower()
-        preklad = request.POST.get("preklad").lower()
+        # uprava aby nerozhodovali velke a male pismena
+        word_ = request.POST.get("word").lower() #nastavenie premennych na data z formularu
+        P_cas = request.POST.get("Pritomny_cas").lower() #nastavenie premennych na data z formularu
+        M_cas = request.POST.get("Mynuly_cas").lower() #nastavenie premennych na data z formularu
+        preklad = request.POST.get("preklad").lower() #nastavenie premennych na data z formularu
 
-        if word_ == word.word:
+        # Kontrola spravnosti slovicka
+        # Kontrola slovicka
+        if word_ == word.word: 
             one_is_correct = True
             context.update({"one_is_correct":one_is_correct})
         else:
             correct = False
-            
-        if P_cas == word.tri_os:
+
+        # Kontrola tretej osoby    
+        if P_cas == word.tri_os: 
             two_is_correct = True
             context.update({"two_is_correct":two_is_correct})
-
         else:
             correct = False
-            
+
+        # Kontrola minuleho casu    
         if M_cas == word.minuly_cas:
             three_is_correct = True
             context.update({"three_is_correct":three_is_correct})
         else:
             correct = False
-            
             new_M_cas = word.minuly_cas
+
+        # Kontrola prekladu
         if preklad == word.translation:
             four_is_correct = True
             context.update({"four_is_correct":four_is_correct})
         else:
             correct = False
             
-        
+        # upravenie dat pre Javascript
         data_js.update({"a":word.word})
         data_js.update({"b":word.tri_os})
         data_js.update({"c":word.minuly_cas})
         data_js.update({"d":word.translation})
 
+        # Nacitanie dat do contextu
         js_data = str(json.dumps(data_js))
         context.update({"data_js":js_data})
         context.update({"word_":word_})
@@ -170,37 +178,41 @@ def check(request,):
         context.update({"M_cas":M_cas})
         context.update({"preklad":preklad})
 
-    else:
-
-        
-        word_ = request.POST.get("word")
+    else:# Ak hadane slovicko nieje sloveso
+        word_ = request.POST.get("word").lower()
         preklad = request.POST.get("preklad").lower()
-
+        
+        # Kontrola spravnosti slovicka
+        # Kontrola slovicka
         if word_ == word.word:
             one_is_correct = True
-            
             context.update({"one_is_correct":True})
         else:
             correct = False
+
+        # Kontrola prekladu
         if preklad == word.translation:
             four_is_correct = True
             context.update({"four_is_correct":four_is_correct})
         else:
             correct = False
-        
-        context.update({"word_": word_})
-        context.update({"preklad": preklad})
 
+        # upravenie dat pre Javascript
         data_js.update({"a":word.word})
         data_js.update({"b":word.translation})
+
+        # Nacitanie dat do contextu
+        context.update({"word_": word_})
+        context.update({"preklad": preklad})
 
         js_data = str(json.dumps(data_js))
         context.update({"data_js":js_data})
 
+
+    # Posuvanie slovicka o levely (NEFUNGUJE)
     if correct == True:
         word.tries = word.tries + 1
         word.save()
-        
         
         if word.tries == 3: 
             word.level = word.level + 1
@@ -226,12 +238,13 @@ def check(request,):
     
     context.update({"one_is_correct":one_is_correct})        
     return HttpResponse(template.render(context, request))   
-    #return HttpResponseRedirect(reverse('learn:check', args = (context)))
 
-def add(request):
+
+
+def add(request):# Funkcia na pridavanie slovicka
 
     if request.method == "POST":
-        
+
         newItem = request.POST.get("newitems")
         items = newItem.split("-")
         if len(items)>1:
@@ -273,9 +286,7 @@ def add(request):
 
     
 
-
-
-def delete(request, werb_id= 0, word_id = 0):
+def delete(request, werb_id= 0, word_id = 0):# Funkcia na vymayanie slovicka
 
     context = {"dark_mode":dark_mode}
 
@@ -298,8 +309,10 @@ def delete(request, werb_id= 0, word_id = 0):
             pass
    
     return HttpResponseRedirect(reverse('learn:add'))
-    
-def detail(request,  werb_id= 0, word_id = 0):
+
+
+
+def detail(request,  werb_id= 0, word_id = 0):# Funkcia zobrazuje detailnu stranku slovicka
     context = {"dark_mode":dark_mode}
     template = loader.get_template("learn/detail.html")
     word = 0
@@ -327,8 +340,10 @@ def detail(request,  werb_id= 0, word_id = 0):
     context.update({"word":word})
 
     return HttpResponse(template.render(context, request))
-    
-def change(request,  word_id = 0 , werb_id = 0,):
+
+
+
+def change(request,  word_id = 0 , werb_id = 0,):# Funkcia na upravu slovicka
     
     
     if word_id == 0:
